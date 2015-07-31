@@ -1,4 +1,4 @@
-<img src="http://cdn.flaticon.com/png/256/64749.png" alt="Icon" width="30" height="30"/> Sprout IoC
+<img src="http://cdn.flaticon.com/png/256/66630.png" alt="Icon" width="30" height="30"/> Sprout IoC
 =====
 [![Build status](https://ci.appveyor.com/api/projects/status/?svg=true)](https://ci.appveyor.com/project/elvirb/sprout-ioc)
 [![License](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
@@ -19,6 +19,11 @@ namespace MyNamespace
 		{
 			set;
 			get;
+		}
+
+		public void DoStuff()
+		{
+			...
 		}
 
 		[OnStart]
@@ -48,10 +53,10 @@ class MyMain
 	static void Main(string[] args)
 	{
 		Context context = new Context();
-
 		context.Scan("MyNamespace").Start();
 
 		MyComponent component = context.GetComponent<MyComponent>();
+		component.DoStuff();
 
 		while (context.State == ContextState.Started)
 		{

@@ -1,6 +1,6 @@
 <img src="http://cdn.flaticon.com/png/256/66630.png" alt="Icon" width="30" height="30"/> Sprout IoC
 =====
-[![Build status](https://ci.appveyor.com/api/projects/status/?svg=true)](https://ci.appveyor.com/project/elvirb/sprout-ioc)
+[![Build status](https://ci.appveyor.com/api/projects/status/txmmhy4jjvjlubut?svg=true)](https://ci.appveyor.com/project/elvirb/sprout-ioc)
 [![License](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Stories in Ready](https://badge.waffle.io/arenanet/sprout-ioc.png?label=ready&title=Ready)](http://waffle.io/arenanet/sprout-ioc)
 

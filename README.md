@@ -52,13 +52,21 @@ class MyMain
 {
 	static void Main(string[] args)
 	{
+		// Create context instance
 		Context context = new Context();
+
+		// Register application namespace and start
 		context.Scan("MyNamespace").Start();
 
+		// Register shuwdown hook
+		AppDomain.CurrentDomain.ProcessExit += (s, e) => context.Stop();
+
+		// Get singleton components and interact with them
 		MyComponent component = context.GetComponent<MyComponent>();
 		component.DoStuff();
 
-		while (context.State == ContextState.Started)
+		// Wait until Context stops
+		while (context.State != ContextState.Stopped)
 		{
 			Thread.Sleep(1000);
 		}

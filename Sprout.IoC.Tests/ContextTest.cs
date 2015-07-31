@@ -373,7 +373,7 @@ namespace ArenaNet.Sprout.IoC
 namespace TestComponentNotFound.Namespace
 {
     [Component(Name = "TestComponentNotFoundClass")]
-    public class TestComponentNotFoundClass
+    class TestComponentNotFoundClass
     {
         [Inject]
         public TestClass1 ReferencedTestClass { set; get; }
@@ -383,13 +383,13 @@ namespace TestComponentNotFound.Namespace
 namespace TestComponentName.Namespace
 {
     [Component(Name = "TestComponentNameClass")]
-    public class TestComponentNameClass1
+    class TestComponentNameClass1
     {
 
     }
 
     [Component(Name = "TestComponentNameClass")]
-    public class TestComponentNameClass2
+    class TestComponentNameClass2
     {
 
     }
@@ -398,14 +398,14 @@ namespace TestComponentName.Namespace
 namespace TestSimple.Namespace
 {
     [Component(Name = "TestClass1")]
-    public class TestClass1
+    class TestClass1
     {
         [Inject]
         public TestClass2 ReferencedTestClass { set; get; }
     }
 
     [Component(Name = "TestClass2")]
-    public class TestClass2
+    class TestClass2
     {
 
     }
@@ -414,7 +414,7 @@ namespace TestSimple.Namespace
 namespace TestLifecycle.Namespace
 {
     [Component(Name = "TestLifecycleClass")]
-    public class TestLifecycleClass
+    class TestLifecycleClass
     {
         public bool OnStartInvoked
         {
@@ -451,14 +451,14 @@ namespace TestLifecycle.Namespace
 namespace TestCyclic.Namespace
 {
     [Component(Name = "TestCyclicClass1")]
-    public class TestCyclicClass1
+    class TestCyclicClass1
     {
         [Inject]
         public TestCyclicClass2 ReferencedTestClass { set; get; }
     }
 
     [Component(Name = "TestCyclicClass2")]
-    public class TestCyclicClass2
+    class TestCyclicClass2
     {
         [Inject]
         public TestCyclicClass1 ReferencedTestClass { set; get; }
@@ -468,21 +468,21 @@ namespace TestCyclic.Namespace
 namespace TestInjectionScope.Namespace
 {
     [Component(Name = "TestInjectionScopeClass1", Scope = ComponentScope.Context)]
-    public class TestInjectionScopeClass1
+    class TestInjectionScopeClass1
     {
         [Inject]
         public TestInjectionScopeClass3 ReferencedTestClass { set; get; }
     }
 
     [Component(Name = "TestInjectionScopeClass2", Scope = ComponentScope.Context)]
-    public class TestInjectionScopeClass2
+    class TestInjectionScopeClass2
     {
         [Inject]
         public TestInjectionScopeClass3 ReferencedTestClass { set; get; }
     }
 
     [Component(Name = "TestInjectionScopeClass3", Scope = ComponentScope.Injection)]
-    public class TestInjectionScopeClass3
+    class TestInjectionScopeClass3
     {
     }
 }

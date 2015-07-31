@@ -61,7 +61,7 @@ class MyMain
 		// Register shutdown hook
 		AppDomain.CurrentDomain.ProcessExit += (s, e) => context.Stop();
 
-		// Get singleton components and interact with them
+		// Get Context scoped components and interact with them
 		MyComponent component = context.GetComponent<MyComponent>();
 		component.DoStuff();
 

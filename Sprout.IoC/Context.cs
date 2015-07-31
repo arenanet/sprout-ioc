@@ -219,18 +219,20 @@ namespace ArenaNet.Sprout.IoC
         /// Scans the namespace of the given type and all of it's child namespaces for components. Note: You can only call this on a Context that hasn't started.
         /// </summary>
         /// <param name="type"></param>
-        public Context Scan<T>()
+        /// <param name="scanAssembly"></param>
+        public Context Scan<T>(Assembly scanAssembly = null)
         {
             AssertState(ContextState.Created);
 
-            return Scan(typeof(T));
+            return Scan(typeof(T), scanAssembly);
         }
 
         /// <summary>
         /// Scans the namespace of the given type and all of it's child namespaces for components. Note: You can only call this on a Context that hasn't started.
         /// </summary>
         /// <param name="type"></param>
-        public Context Scan(Type type)
+        /// <param name="scanAssembly"></param>
+        public Context Scan(Type type, Assembly scanAssembly = null)
         {
             AssertState(ContextState.Created);
 
@@ -239,32 +241,59 @@ namespace ArenaNet.Sprout.IoC
                 throw new ArgumentNullException("Type cannot be null.");
             }
 
-            return Scan(type.Namespace);
+            return Scan(type.Namespace, scanAssembly);
         }
 
         /// <summary>
         /// Scans the given namespace and all of it's child namespaces for components. Note: You can only call this on a Context that hasn't started.
         /// </summary>
         /// <param name="scanNamespace"></param>
-        public Context Scan(string scanNamespace)
+        /// <param name="scanAssembly"></param>
+        public Context Scan(string scanNamespace, Assembly scanAssembly = null)
         {
             AssertState(ContextState.Created);
 
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            if (scanAssembly != null)
             {
-                foreach (Type type in assembly.GetTypes())
+                ScanAssembly(scanNamespace, scanAssembly);
+            }
+            else
+            {
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    ComponentAttribute componentAttribute = null;
-
-                    if ((scanNamespace == null || string.IsNullOrEmpty(scanNamespace) || (type.Namespace != null && (type.Namespace.Equals(scanNamespace) || type.Namespace.StartsWith(scanNamespace + ".")))) &&
-                        (componentAttribute = type.GetCustomAttribute<ComponentAttribute>()) != null)
+                    foreach (Type type in assembly.GetTypes())
                     {
-                        RegisterComponent(type, componentAttribute);
+                        ComponentAttribute componentAttribute = null;
+
+                        if ((scanNamespace == null || string.IsNullOrEmpty(scanNamespace) || (type.Namespace != null && (type.Namespace.Equals(scanNamespace) || type.Namespace.StartsWith(scanNamespace + ".")))) &&
+                            (componentAttribute = type.GetCustomAttribute<ComponentAttribute>()) != null)
+                        {
+                            RegisterComponent(type, componentAttribute);
+                        }
                     }
                 }
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// Scans a namespaces for Components.
+        /// </summary>
+        /// <param name="scanNamespace"></param>
+        /// <param name="assembly"></param>
+        private void ScanAssembly(string scanNamespace, Assembly assembly)
+        {
+            foreach (Type type in assembly.GetTypes())
+            {
+                ComponentAttribute componentAttribute = null;
+
+                if ((scanNamespace == null || string.IsNullOrEmpty(scanNamespace) || (type.Namespace != null && (type.Namespace.Equals(scanNamespace) || type.Namespace.StartsWith(scanNamespace + ".")))) &&
+                    (componentAttribute = type.GetCustomAttribute<ComponentAttribute>()) != null)
+                {
+                    RegisterComponent(type, componentAttribute);
+                }
+            }
         }
 
         /// <summary>

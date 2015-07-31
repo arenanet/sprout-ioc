@@ -2,7 +2,7 @@
 =====
 [![Build status](https://ci.appveyor.com/api/projects/status/txmmhy4jjvjlubut?svg=true)](https://ci.appveyor.com/project/elvirb/sprout-ioc)
 [![License](https://img.shields.io/github/license/arenanet/sprout-ioc.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Stories in Ready](https://img.shields.io/github/issues/arenanet/sprout-io.svg?label=tasks)](http://waffle.io/arenanet/sprout-ioc)
+[![Stories in Ready](https://img.shields.io/github/issues/arenanet/sprout-ioc.svg?label=tasks)](http://waffle.io/arenanet/sprout-ioc)
 
 A down-to-earth IoC container implementation written in C#.
 

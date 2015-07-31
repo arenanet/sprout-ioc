@@ -14,102 +14,13 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ArenaNet.Sprout.IoC;
+
 using TestSimple.Namespace;
 using TestCyclic.Namespace;
 using TestLifecycle.Namespace;
 using TestInjectionScope.Namespace;
-
-namespace TestSimple.Namespace
-{
-    [Component(Name = "TestClass1")]
-    public class TestClass1
-    {
-        [Inject]
-        public TestClass2 ReferencedTestClass { set; get; }
-    }
-
-    [Component(Name = "TestClass2")]
-    public class TestClass2
-    {
-
-    }
-}
-
-namespace TestLifecycle.Namespace
-{
-    [Component(Name = "TestLifecycleClass")]
-    public class TestLifecycleClass
-    {
-        public bool OnStartInvoked
-        {
-            private set;
-            get;
-        }
-
-        public bool OnStopInvoked
-        {
-            private set;
-            get;
-        }
-
-        public TestLifecycleClass()
-        {
-            OnStartInvoked = false;
-            OnStopInvoked = false;
-        }
-
-        [OnStart]
-        void OnStart()
-        {
-            OnStartInvoked = true;
-        }
-
-        [OnStop]
-        void OnStop()
-        {
-            OnStopInvoked = true;
-        }
-    }
-}
-
-namespace TestCyclic.Namespace
-{
-    [Component(Name = "TestCyclicClass1")]
-    public class TestCyclicClass1
-    {
-        [Inject]
-        public TestCyclicClass2 ReferencedTestClass { set; get; }
-    }
-
-    [Component(Name = "TestCyclicClass2")]
-    public class TestCyclicClass2
-    {
-        [Inject]
-        public TestCyclicClass1 ReferencedTestClass { set; get; }
-    }
-}
-
-namespace TestInjectionScope.Namespace
-{
-    [Component(Name = "TestInjectionScopeClass1", Scope = ComponentScope.Context)]
-    public class TestInjectionScopeClass1
-    {
-        [Inject]
-        public TestInjectionScopeClass3 ReferencedTestClass { set; get; }
-    }
-
-    [Component(Name = "TestInjectionScopeClass2", Scope = ComponentScope.Context)]
-    public class TestInjectionScopeClass2
-    {
-        [Inject]
-        public TestInjectionScopeClass3 ReferencedTestClass { set; get; }
-    }
-
-    [Component(Name = "TestInjectionScopeClass3", Scope = ComponentScope.Injection)]
-    public class TestInjectionScopeClass3
-    {
-    }
-}
+using TestComponentNotFound.Namespace;
+using TestComponentName.Namespace;
 
 namespace ArenaNet.Sprout.IoC
 {
@@ -119,6 +30,50 @@ namespace ArenaNet.Sprout.IoC
     [TestClass]
     public class ContextTest
     {
+        [TestMethod]
+        public void TestEmpty()
+        {
+            using (Context context = new Context())
+            {
+                context.Start();
+
+                Assert.AreEqual(ContextState.Started, context.State);
+
+                Assert.AreEqual(0, context.GetComponents().Count);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ComponentNotFoundException))]
+        public void TestStartComponentNotFound_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Register<TestComponentNotFoundClass>().Start();
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ComponentNameException))]
+        public void TestRegisterUsingGenericsComponentName_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Register<TestComponentNameClass1>().Register<TestComponentNameClass2>();
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidContextStateException))]
+        public void TestRegisterUsingGenericsInvalidState_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Start();
+                context.Register<TestClass1>();
+            }
+        }
+
         [TestMethod]
         public void TestRegisterUsingGenerics()
         {
@@ -134,6 +89,27 @@ namespace ArenaNet.Sprout.IoC
                 Assert.IsNotNull(context.GetComponent<TestClass1>());
                 Assert.IsNotNull(context.GetComponent<TestClass2>());
                 Assert.AreEqual(context.GetComponent<TestClass1>().ReferencedTestClass, context.GetComponent<TestClass2>());
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ComponentNameException))]
+        public void TestRegisterUsingTypeComponentName_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Register(typeof(TestComponentNameClass1)).Register(typeof(TestComponentNameClass2));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidContextStateException))]
+        public void TestRegisterUsingTypeInvalidState_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Start();
+                context.Register(typeof(TestClass1));
             }
         }
 
@@ -156,7 +132,28 @@ namespace ArenaNet.Sprout.IoC
         }
 
         [TestMethod]
-        public void TestScanNamespaceUsingGenerics()
+        [ExpectedException(typeof(ComponentNameException))]
+        public void TestScanUsingGenericsComponentName_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Scan<TestComponentNameClass1>();
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidContextStateException))]
+        public void TestScanUsingGenericsInvalidState_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Start();
+                context.Scan<TestClass1>();
+            }
+        }
+
+        [TestMethod]
+        public void TestScanUsingGenerics()
         {
             using (Context context = new Context())
             {
@@ -173,7 +170,28 @@ namespace ArenaNet.Sprout.IoC
         }
 
         [TestMethod]
-        public void TestScanNamespaceUsingType()
+        [ExpectedException(typeof(ComponentNameException))]
+        public void TestScanUsingTypeComponentName_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Scan(typeof(TestComponentNameClass1));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidContextStateException))]
+        public void TestScanUsingTypeInvalidState_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Start();
+                context.Scan(typeof(TestClass1));
+            }
+        }
+
+        [TestMethod]
+        public void TestScanUsingType()
         {
             using (Context context = new Context())
             {
@@ -190,7 +208,28 @@ namespace ArenaNet.Sprout.IoC
         }
 
         [TestMethod]
-        public void TestScanNamespaceUsingNamespace()
+        [ExpectedException(typeof(ComponentNameException))]
+        public void TestScanUsingNamespaceComponentName_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Scan("TestComponentName.Namespace");
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidContextStateException))]
+        public void TestScanUsingNamespaceInvalidState_Error()
+        {
+            using (Context context = new Context())
+            {
+                context.Start();
+                context.Scan("TestComponentName.Namespace");
+            }
+        }
+
+        [TestMethod]
+        public void TestScanUsingNamespace()
         {
             using (Context context = new Context())
             {
@@ -328,5 +367,122 @@ namespace ArenaNet.Sprout.IoC
                     context.GetComponent<TestInjectionScopeClass2>().ReferencedTestClass);
             }
         }
+    }
+}
+
+namespace TestComponentNotFound.Namespace
+{
+    [Component(Name = "TestComponentNotFoundClass")]
+    public class TestComponentNotFoundClass
+    {
+        [Inject]
+        public TestClass1 ReferencedTestClass { set; get; }
+    }
+}
+
+namespace TestComponentName.Namespace
+{
+    [Component(Name = "TestComponentNameClass")]
+    public class TestComponentNameClass1
+    {
+
+    }
+
+    [Component(Name = "TestComponentNameClass")]
+    public class TestComponentNameClass2
+    {
+
+    }
+}
+
+namespace TestSimple.Namespace
+{
+    [Component(Name = "TestClass1")]
+    public class TestClass1
+    {
+        [Inject]
+        public TestClass2 ReferencedTestClass { set; get; }
+    }
+
+    [Component(Name = "TestClass2")]
+    public class TestClass2
+    {
+
+    }
+}
+
+namespace TestLifecycle.Namespace
+{
+    [Component(Name = "TestLifecycleClass")]
+    public class TestLifecycleClass
+    {
+        public bool OnStartInvoked
+        {
+            private set;
+            get;
+        }
+
+        public bool OnStopInvoked
+        {
+            private set;
+            get;
+        }
+
+        public TestLifecycleClass()
+        {
+            OnStartInvoked = false;
+            OnStopInvoked = false;
+        }
+
+        [OnStart]
+        void OnStart()
+        {
+            OnStartInvoked = true;
+        }
+
+        [OnStop]
+        void OnStop()
+        {
+            OnStopInvoked = true;
+        }
+    }
+}
+
+namespace TestCyclic.Namespace
+{
+    [Component(Name = "TestCyclicClass1")]
+    public class TestCyclicClass1
+    {
+        [Inject]
+        public TestCyclicClass2 ReferencedTestClass { set; get; }
+    }
+
+    [Component(Name = "TestCyclicClass2")]
+    public class TestCyclicClass2
+    {
+        [Inject]
+        public TestCyclicClass1 ReferencedTestClass { set; get; }
+    }
+}
+
+namespace TestInjectionScope.Namespace
+{
+    [Component(Name = "TestInjectionScopeClass1", Scope = ComponentScope.Context)]
+    public class TestInjectionScopeClass1
+    {
+        [Inject]
+        public TestInjectionScopeClass3 ReferencedTestClass { set; get; }
+    }
+
+    [Component(Name = "TestInjectionScopeClass2", Scope = ComponentScope.Context)]
+    public class TestInjectionScopeClass2
+    {
+        [Inject]
+        public TestInjectionScopeClass3 ReferencedTestClass { set; get; }
+    }
+
+    [Component(Name = "TestInjectionScopeClass3", Scope = ComponentScope.Injection)]
+    public class TestInjectionScopeClass3
+    {
     }
 }

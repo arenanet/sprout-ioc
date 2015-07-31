@@ -505,11 +505,20 @@ namespace ArenaNet.Sprout.IoC
                     componentAttribute.Name = type.Name;
                 }
 
-                if (descriptorNameCache.ContainsKey(componentAttribute.Name))
+                ComponentDescriptor existingDescriptor = null;
+
+                if (descriptorNameCache.TryGetValue(componentAttribute.Name, out existingDescriptor))
                 {
                     ComponentDescriptor descriptor = descriptorNameCache[componentAttribute.Name];
 
-                    throw new ComponentNameException("Component name '" + componentAttribute.Name + "' is already used by '" + descriptor.Type + "'");
+                    if (!existingDescriptor.Type.AssemblyQualifiedName.Equals(type.AssemblyQualifiedName))
+                    {
+                        throw new ComponentNameException("Component name '" + componentAttribute.Name + "' is already used by '" + descriptor.Type + "'");
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
                 string typeName = type.AssemblyQualifiedName;

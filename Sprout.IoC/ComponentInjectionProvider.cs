@@ -59,7 +59,7 @@ namespace ArenaNet.Sprout.IoC
                 context.descriptorTypeCache.TryGetValue(injectDescriptor.Type.AssemblyQualifiedName, out injectComponent);
             }
 
-            return context.GetInstance(injectComponent);
+            return injectComponent == null ? null : context.GetInstance(injectComponent);
         }
     }
 }

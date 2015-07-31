@@ -59,6 +59,9 @@
       <Name>Sprout.IoC</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Sprout.IoC.Tests.licenseheader" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -58,7 +58,7 @@ class MyMain
 		// Register application namespace and start
 		context.Scan("MyNamespace").Start();
 
-		// Register shuwdown hook
+		// Register shutdown hook
 		AppDomain.CurrentDomain.ProcessExit += (s, e) => context.Stop();
 
 		// Get singleton components and interact with them
